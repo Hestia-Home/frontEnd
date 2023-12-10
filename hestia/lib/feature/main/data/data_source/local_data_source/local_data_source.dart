@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:io' as io;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hestia/feature/main/data/data_source/database/db.dart';
 import 'package:hestia/feature/main/data/data_source/local_data_source/i_local_data_source.dart';
 import 'package:hestia/feature/main/data/model/device_model.dart';
@@ -49,6 +48,15 @@ class LocalDataSource implements ILocalDataSource {
 
     return str;
   }
+
+  @override
+  Future<UserData?> getUser() async => await _hestiaDB.getUserState();
+
+  @override
+  Future<List<HomeData>> getHomes() async => await _hestiaDB.getHomes();
+
+  @override
+  Future<Setting?> getSettings() async => await _hestiaDB.getSettings();
 
   @override
   Future<void> createOrUpdateDeviceInfo(Map<String, dynamic> json) async {

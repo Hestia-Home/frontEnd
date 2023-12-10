@@ -114,7 +114,9 @@ class MainTabRoute extends PageRouteInfo<void> {
 class MainRoute extends PageRouteInfo<MainRouteArgs> {
   MainRoute({
     Key? key,
-    MainWidgetModel Function(BuildContext) wmFactory = createMainWM,
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel> Function(
+            BuildContext)
+        wmFactory = createMainWM,
     List<PageRouteInfo>? children,
   }) : super(
           MainRoute.name,
@@ -138,7 +140,8 @@ class MainRouteArgs {
 
   final Key? key;
 
-  final MainWidgetModel Function(BuildContext) wmFactory;
+  final WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel> Function(
+      BuildContext) wmFactory;
 
   @override
   String toString() {

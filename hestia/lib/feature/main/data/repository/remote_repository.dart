@@ -3,7 +3,7 @@ import 'package:hestia/feature/main/domain/repository/i_remote_repository.dart';
 
 class RemoteRepository implements IRemoteRepository {
   final IRemoteDataSource _remoteDataSource;
-  RemoteRepository(this._remoteDataSource);
+  const RemoteRepository(this._remoteDataSource);
 
   @override
   void setTargetTemperatureInWeatherStation(double targetTemperature) {

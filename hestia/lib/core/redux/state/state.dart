@@ -17,5 +17,8 @@ class AppStore extends Store<AppState> {
   AppStore(
     super.reducer, {
     required super.initialState,
+    super.middleware,
+    super.distinct,
+    super.syncStream,
   });
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:hestia/core/navigation/app_router/app_router.dart';
+import 'package:hestia/seriveces_starter.dart';
 
 import 'core/di/service_locator.dart';
 
@@ -19,10 +20,16 @@ void main() async {
   );
 }
 
-_run() {
-  WidgetsFlutterBinding.ensureInitialized();
+_run() async {
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  binding.deferFirstFrame();
 
   ServiceLocator.init();
+
+  final servicesStarter = ServicesStarter(
+    localRepository: ServiceLocator.instance.localRepositoryMain,
+  );
+  await servicesStarter.init();
 
   runApp(
     ServiceLocator.instance.myApp,

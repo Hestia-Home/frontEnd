@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hestia/feature/main/data/data_source/database/db.dart';
 import 'package:hestia/feature/main/domain/entity/device.dart';
 import 'package:hestia/feature/main/domain/entity/room_entity.dart';
 
@@ -10,4 +11,7 @@ abstract class ILocalDataSource {
   Future<void> saveUserAvatarImage();
   Stream<List<RoomEntity>> watchRoomList();
   void setRoomList(List<String> roomList);
+  Future<UserData?> getUser();
+  Future<Setting?> getSettings();
+  Future<List<HomeData>> getHomes();
 }
