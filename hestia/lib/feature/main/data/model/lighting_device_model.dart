@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter_smarthome/feature/main/data/data_source/database/db.dart';
-import 'package:flutter_smarthome/feature/main/domain/entity/lighting_device_entity.dart';
+import 'package:hestia/feature/main/data/data_source/database/db.dart';
+import 'package:hestia/feature/main/domain/entity/lighting_device_entity.dart';
 
 class LightingDeviceModel extends LightingDeviceEntity {
   LightingDeviceModel({required super.id, required super.isOn});

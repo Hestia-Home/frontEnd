@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter_smarthome/feature/main/data/data_source/local_data_source/i_local_data_source.dart';
-import 'package:flutter_smarthome/feature/main/data/data_source/remote_data_source/i_remote_data_source.dart';
+import 'package:hestia/feature/main/data/data_source/local_data_source/i_local_data_source.dart';
+import 'package:hestia/feature/main/data/data_source/remote_data_source/i_remote_data_source.dart';
 import 'package:web_socket_channel/io.dart';
 import 'dart:developer' as dev;
 

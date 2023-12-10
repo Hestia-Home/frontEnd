@@ -1,13 +1,16 @@
+import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_smarthome/feature/main/data/model/lighting_device_model.dart';
-import 'package:flutter_smarthome/feature/main/data/model/sensor_model.dart';
-import 'package:flutter_smarthome/feature/main/domain/entity/device.dart';
-import 'package:mobx/mobx.dart';
-import 'package:mobx_widget/mobx_widget.dart';
+import 'package:hestia/feature/main/data/model/lighting_device_model.dart';
+import 'package:hestia/feature/main/data/model/sensor_model.dart';
+
+import '../../domain/entity/device.dart';
 
 class RoomView extends StatelessWidget {
-  final ObservableStream<List<Device>> dataStream;
-  const RoomView({super.key, required this.dataStream});
+  final EntityStateNotifier<List<Device>> devicesState;
+  const RoomView({
+    super.key,
+    required this.devicesState,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +18,10 @@ class RoomView extends StatelessWidget {
       height: MediaQuery.of(context).size.height - 200,
       child: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10, top: 15),
-        child: ObserverStream<List<Device>, Exception>(
-          observableStream: () => dataStream,
-          onData: (_, data) => GridView.builder(
+        child: EntityStateNotifierBuilder<List<Device>>(
+          listenableEntityState: devicesState,
+          builder: (context, data) {
+            return GridView.builder(
               itemCount: data?.length,
               cacheExtent: 200,
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -27,13 +31,15 @@ class RoomView extends StatelessWidget {
                   childAspectRatio: 185 / 250),
               itemBuilder: (context, gridIndex) {
                 return _getCardWidget(data?[gridIndex]);
-              }),
+              },
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _getCardWidget(dynamic data) {
+  Widget _getCardWidget(Object? data) {
     Map<dynamic, Widget> map = {
       TemperatureSensorModel: _temperatureSensorCard(data),
       LightingDeviceModel: _lightingDeviceCard(data)
@@ -93,52 +99,53 @@ class RoomView extends StatelessWidget {
 
   Widget _temperatureSensorCard(dynamic temperatureSensorEntity) {
     return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 0,
-        color: const Color.fromARGB(255, 237, 237, 237),
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 20, left: 25, bottom: 20),
-              child: Align(
-                  alignment: Alignment.topLeft,
-                  child: ImageIcon(
-                    AssetImage('assets/main/thermostat.png'),
-                    size: 45,
-                  )),
-            ),
-            const Padding(
-                padding: EdgeInsets.only(bottom: 30),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 0,
+      color: const Color.fromARGB(255, 237, 237, 237),
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 20, left: 25, bottom: 20),
+            child: Align(
+                alignment: Alignment.topLeft,
+                child: ImageIcon(
+                  AssetImage('assets/main/thermostat.png'),
+                  size: 45,
+                )),
+          ),
+          const Padding(
+              padding: EdgeInsets.only(bottom: 30),
+              child: Text(
+                "Температура",
+                style: TextStyle(
+                    fontFamily: "Lexend",
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold),
+              )),
+          Padding(
+              padding: const EdgeInsets.only(bottom: 35),
+              child: Text(temperatureSensorEntity.temperature.toString())),
+          Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 25),
                 child: Text(
-                  "Температура",
+                  "On",
                   style: TextStyle(
                       fontFamily: "Lexend",
                       fontSize: 17,
                       fontWeight: FontWeight.bold),
-                )),
-            Padding(
-                padding: const EdgeInsets.only(bottom: 35),
-                child: Text(temperatureSensorEntity.temperature.toString())),
-            Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 25),
-                  child: Text(
-                    "On",
-                    style: TextStyle(
-                        fontFamily: "Lexend",
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold),
-                  ),
                 ),
-                Expanded(
-                    child: Align(
-                        alignment: Alignment.topRight,
-                        child: Switch.adaptive(
-                            value: false, onChanged: (bool newValue) {})))
-              ],
-            )
-          ],
-        ));
+              ),
+              Expanded(
+                  child: Align(
+                      alignment: Alignment.topRight,
+                      child: Switch.adaptive(
+                          value: false, onChanged: (bool newValue) {})))
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

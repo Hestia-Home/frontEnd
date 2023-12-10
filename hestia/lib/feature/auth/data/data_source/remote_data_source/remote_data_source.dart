@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_smarthome/feature/auth/data/data_source/remote_data_source/i_remote_data_source.dart';
+import 'package:hestia/feature/auth/data/data_source/remote_data_source/i_remote_data_source.dart';
 
 const String login = "http://10.0.2.2:8000/auth/jwt/login";
 const String register = 'http://10.0.2.2:8000/auth/register';
@@ -10,12 +10,13 @@ class RemoteDataSourceAuth implements IRemoteDataSourceAuth {
   RemoteDataSourceAuth(this.dio);
 
   @override
-  Future<Response> registerNewUser(
-      {required String username,
-      required String password,
-      required String email,
-      required bool isVerified,
-      required bool isSuperUser}) async {
+  Future<Response> registerNewUser({
+    required String username,
+    required String password,
+    required String email,
+    required bool isVerified,
+    required bool isSuperUser,
+  }) async {
     dynamic response;
     try {
       response = await dio.post(register, data: {
