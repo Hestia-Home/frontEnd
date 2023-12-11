@@ -5,13 +5,10 @@ import 'package:hestia/core/redux/state/state.dart';
 import 'package:hestia/feature/main/domain/repository/i_local_repository.dart';
 
 class ServicesStarter {
-  final ILocalRepository localRepository;
-  ServicesStarter({
-    required this.localRepository,
-  });
+  ServicesStarter();
   late final AppStore store;
 
-  Future<void> init() async {
+  Future<void> init(ILocalRepository localRepository) async {
     final settingsState = await localRepository.getSettingsState();
     final userState = await localRepository.getUserState();
     store = AppStore(
@@ -33,3 +30,5 @@ class ServicesStarter {
     );
   }
 }
+
+final servicesStarter = ServicesStarter();

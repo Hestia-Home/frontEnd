@@ -7,15 +7,15 @@ abstract base class Action<T> with EquatableMixin {
   final T payload;
 }
 
-final class UpdateSettingsState extends Action<SettingsState> {
-  const UpdateSettingsState(super.payload);
+final class UpdateSettingsAction extends Action<SettingsState> {
+  const UpdateSettingsAction(super.payload);
 
   @override
   List<Object?> get props => [payload];
 }
 
-final class UpdateUserState extends Action<UserState> {
-  const UpdateUserState(super.payload);
+final class UpdateUserAction extends Action<UserState> {
+  const UpdateUserAction(super.payload);
 
   @override
   List<Object?> get props => [payload];

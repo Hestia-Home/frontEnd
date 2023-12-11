@@ -3,10 +3,27 @@ import 'package:hestia/core/redux/state/state.dart';
 
 class AppReducer {
   static AppState stateReducer(AppState state, dynamic action) {
-    if (action is UpdateSettingsState) {
-      return state.copyWith(settingsState: action.payload);
+    if (action is UpdateSettingsAction) {
+      return state.copyWith(
+        settingsState: state.settingsState.copyWith(
+          biometricsAuthRequired: action.payload.biometricsAuthRequired,
+          pinAuthRequired: action.payload.pinAuthRequired,
+        ),
+      );
     }
-    if (action is UpdateUserState) {}
-    return state.copyWith(userState: action.payload);
+    if (action is UpdateUserAction) {
+      final payload = action.payload;
+      return state.copyWith(
+        userState: state.userState.copyWith(
+          age: payload.age,
+          sex: payload.sex,
+          isLoggedIn: payload.isLoggedIn,
+          isNew: payload.isNew,
+          name: payload.name,
+          homes: payload.homes,
+        ),
+      );
+    }
+    return state;
   }
 }
