@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hestia/core/common/constants/constants.dart';
+import 'package:hestia/core/di/dependencies.dart';
+import 'package:hestia/core/di/dependencies_provider.dart';
 import 'package:hestia/core/navigation/app_router/app_router.dart';
 import 'package:hestia/feature/auth/data/data_source/local_data_source/i_local_data_source.dart';
 import 'package:hestia/feature/auth/data/data_source/local_data_source/local_data_source.dart';
@@ -13,20 +17,35 @@ import 'package:hestia/feature/main/data/repository/local_repository.dart';
 import 'package:hestia/feature/main/data/repository/remote_repository.dart';
 import 'package:hestia/feature/main/domain/repository/i_local_repository.dart';
 import 'package:hestia/feature/main/domain/repository/i_remote_repository.dart';
+import 'package:hestia/feature/main/presentation/screens/main_screen_model.dart';
 import 'package:hestia/main.dart';
 import 'package:local_auth/local_auth.dart';
 
-class ServiceLocator {
-  static late ServiceLocator instance;
-  ServiceLocator._();
+abstract interface class IDiContainer {
+  Widget createApp();
+}
+
+final class DiContainer implements IDiContainer {
+  @override
+  Widget createApp() {
+    return DependenciesProvider(
+      dependencies: Dependencies(
+        mainModel: _mainModel,
+      ),
+      child: App(appRouter: _appRouter),
+    );
+  }
+
+  late final IMainModel _mainModel = MainModel(
+    locaRepository: _localRepositoryMain,
+    remoteRepository: remoteRepository,
+  );
 
   late final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   late final AppRouter _appRouter = AppRouter();
 
   late final LocalAuthentication _localAuth = LocalAuthentication();
-
-  late final myApp = App(appRouter: _appRouter);
 
   late final ILocalRepositoryAuth localRepositoryAuth =
       LocalRepositoryAuth(localDataSource: localDataSource);
@@ -36,10 +55,6 @@ class ServiceLocator {
     secureStorage: _secureStorage,
   );
 
-  static init() {
-    instance = ServiceLocator._();
-  }
-
   IRemoteRepository get remoteRepository => _remoteRepository;
 
   ILocalRepository get localRepositoryMain => _localRepositoryMain;
@@ -47,8 +62,10 @@ class ServiceLocator {
   late final RemoteRepository _remoteRepository =
       RemoteRepository(_remoteDataSource);
 
-  late final IRemoteDataSource _remoteDataSource =
-      RemoteDataSource(_localDataSource);
+  late final IRemoteDataSource _remoteDataSource = RemoteDataSource(
+    localDataSource: _localDataSource,
+    url: Constants.webSocketUrl,
+  );
 
   late final ILocalRepository _localRepositoryMain =
       LocalRepository(_localDataSource);

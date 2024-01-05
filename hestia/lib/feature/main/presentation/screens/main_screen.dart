@@ -5,7 +5,7 @@ import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hestia/core/common/domain/entity/substates/user_state.dart';
-import 'package:hestia/feature/main/presentation/screens/main_wm.dart';
+import 'package:hestia/feature/main/presentation/screens/main_screen_wm.dart';
 import 'package:hestia/feature/main/presentation/widgets/room_view.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';

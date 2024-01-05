@@ -4,10 +4,15 @@ import 'package:hestia/feature/main/domain/repository/i_local_repository.dart';
 import 'package:hestia/feature/main/domain/repository/i_remote_repository.dart';
 import 'package:hestia/services_starter.dart';
 
-class MainModel extends ElementaryModel {
+abstract interface class IMainModel extends ElementaryModel {
+  AppStore get store;
+}
+
+class MainModel extends ElementaryModel implements IMainModel {
   final ILocalRepository locaRepository;
   final IRemoteRepository remoteRepository;
 
+  @override
   AppStore get store => servicesStarter.store;
 
   MainModel({

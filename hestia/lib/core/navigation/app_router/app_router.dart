@@ -3,8 +3,8 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hestia/core/common/constants/routes.dart';
 import 'package:hestia/feature/home/home_screen.dart';
-import 'package:hestia/feature/main/presentation/screens/main_widget.dart';
-import 'package:hestia/feature/main/presentation/screens/main_wm.dart';
+import 'package:hestia/feature/main/presentation/screens/main_screen.dart';
+import 'package:hestia/feature/main/presentation/screens/main_screen_wm.dart';
 
 part 'app_router.gr.dart';
 

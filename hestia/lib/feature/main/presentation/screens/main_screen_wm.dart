@@ -4,12 +4,12 @@ import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:hestia/core/common/domain/entity/substates/user_state.dart';
-import 'package:hestia/core/di/service_locator.dart';
+import 'package:hestia/core/di/dependencies.dart';
 import 'package:hestia/feature/main/data/data_source/database/db.dart';
 import 'package:hestia/feature/main/domain/entity/device.dart';
 import 'package:hestia/feature/main/domain/entity/room_entity.dart';
-import 'package:hestia/feature/main/presentation/screens/main_model.dart';
-import 'package:hestia/feature/main/presentation/screens/main_widget.dart';
+import 'package:hestia/feature/main/presentation/screens/main_screen_model.dart';
+import 'package:hestia/feature/main/presentation/screens/main_screen.dart';
 import 'package:provider/provider.dart';
 
 abstract class IMainWidgetModel implements IWidgetModel {
@@ -24,9 +24,12 @@ abstract class IMainWidgetModel implements IWidgetModel {
   Size get size;
 }
 
-class MainWidgetModel extends WidgetModel<MainWidget, MainModel>
+class MainWidgetModel extends WidgetModel<MainWidget, IMainModel>
     implements IMainWidgetModel {
-  MainWidgetModel(super.model);
+  final IMainModel _model;
+  MainWidgetModel({required IMainModel model})
+      : _model = model,
+        super(model);
 
   DateTime get _current => DateTime.now();
 
@@ -89,11 +92,7 @@ class MainWidgetModel extends WidgetModel<MainWidget, MainModel>
 }
 
 MainWidgetModel createMainWM(BuildContext context) {
-  final sl = context.read<ServiceLocator>();
   return MainWidgetModel(
-    MainModel(
-      locaRepository: sl.localRepositoryMain,
-      remoteRepository: sl.remoteRepository,
-    ),
+    model: context.read<Dependencies>().mainModel,
   );
 }

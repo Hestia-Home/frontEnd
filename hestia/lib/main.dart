@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:hestia/core/navigation/app_router/app_router.dart';
-import 'package:hestia/services_starter.dart';
 
-import 'core/di/service_locator.dart';
+import 'core/di/di_container.dart';
 
 void main() async {
   FlutterError.onError = (FlutterErrorDetails details) async {
@@ -22,15 +21,14 @@ void main() async {
 
 _run() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
+
+  final IDiContainer container = DiContainer();
+
   binding.deferFirstFrame();
 
-  ServiceLocator.init();
+  final app = container.createApp();
 
-  await servicesStarter.init(ServiceLocator.instance.localRepositoryMain);
-
-  runApp(
-    ServiceLocator.instance.myApp,
-  );
+  runApp(app);
 }
 
 class App extends StatelessWidget {

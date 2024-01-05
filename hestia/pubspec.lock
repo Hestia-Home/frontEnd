@@ -1174,7 +1174,7 @@ packages:
     source: hosted
     version: "0.1.4-beta"
   web_socket_channel:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: web_socket_channel
       sha256: d88238e5eac9a42bb43ca4e721edba3c08c6354d4a53063afaa568516217621b
@@ -1197,6 +1197,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.7"
+  ws:
+    dependency: "direct main"
+    description:
+      name: ws
+      sha256: "79bfebd5cfcef7d6fb302193ed84d738dcede2a5a0734f47f7d249532591ccf3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   xdg_directories:
     dependency: transitive
     description:
