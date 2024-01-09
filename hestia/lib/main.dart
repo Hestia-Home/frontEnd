@@ -26,7 +26,7 @@ _run() async {
 
   binding.deferFirstFrame();
 
-  final app = container.createApp();
+  final app = await container.createApp();
 
   runApp(app);
 }

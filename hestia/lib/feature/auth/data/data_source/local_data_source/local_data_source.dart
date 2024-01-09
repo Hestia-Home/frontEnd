@@ -9,7 +9,7 @@ class LocalDataSourceAuth implements ILocalDataSourceAuth {
   final FlutterSecureStorage secureStorage;
   final LocalAuthentication authentication;
 
-  LocalDataSourceAuth({
+  const LocalDataSourceAuth({
     required this.authentication,
     required this.secureStorage,
   });
@@ -61,7 +61,7 @@ class LocalDataSourceAuth implements ILocalDataSourceAuth {
 
   @override
   Future<String> getAccessToken() async {
-    final authToken = await secureStorage.read(key: 'auth_token') ?? '';
+    final authToken = await secureStorage.read(key: 'access_token') ?? '';
     return authToken;
   }
 

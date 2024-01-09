@@ -2,8 +2,10 @@ import 'package:hestia/feature/auth/data/data_source/remote_data_source/i_remote
 import 'package:hestia/feature/auth/domain/repository/i_remote_repository.dart';
 
 class RemoteRepoistoryAuth implements IRemoteRepositoryAuth {
-  IRemoteDataSourceAuth remoteDataSource;
-  RemoteRepoistoryAuth({required this.remoteDataSource});
+  final IRemoteDataSourceAuth _remoteDataSource;
+  const RemoteRepoistoryAuth({
+    required IRemoteDataSourceAuth remoteDataSource,
+  }) : _remoteDataSource = remoteDataSource;
 
   @override
   Future<void> registerNewUser({
@@ -12,13 +14,22 @@ class RemoteRepoistoryAuth implements IRemoteRepositoryAuth {
     required String password,
     required bool isVerified,
     required bool isSuperUser,
-  }) async {
-    await remoteDataSource.registerNewUser(
-      isSuperUser: isSuperUser,
-      username: username,
-      isVerified: isVerified,
-      password: password,
-      email: email,
-    );
-  }
+  }) async =>
+      await _remoteDataSource.registerNewUser(
+        isSuperUser: isSuperUser,
+        username: username,
+        isVerified: isVerified,
+        password: password,
+        email: email,
+      );
+
+  @override
+  Future<(String, String)> authorize({
+    required String username,
+    required String password,
+  }) async =>
+      await _remoteDataSource.authenticate(username, password);
+
+  @override
+  Future<(String, String)> refresh() async => await _remoteDataSource.refresh();
 }

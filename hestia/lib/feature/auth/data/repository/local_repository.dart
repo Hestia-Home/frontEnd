@@ -2,28 +2,29 @@ import 'package:hestia/feature/auth/data/data_source/local_data_source/i_local_d
 import 'package:hestia/feature/auth/domain/repository/i_local_repository.dart';
 
 class LocalRepositoryAuth implements ILocalRepositoryAuth {
-  final ILocalDataSourceAuth localDataSource;
+  final ILocalDataSourceAuth _localDataSource;
 
-  const LocalRepositoryAuth({required this.localDataSource});
+  const LocalRepositoryAuth({required ILocalDataSourceAuth localDataSource})
+      : _localDataSource = localDataSource;
 
   @override
   Future<bool> authenticate() async {
-    return await localDataSource.authenticate();
+    return await _localDataSource.authenticate();
   }
 
   @override
   Future<String> getAccessToken() async =>
-      await localDataSource.getAccessToken();
+      await _localDataSource.getAccessToken();
 
   @override
   Future<String> getRefreshToken() async =>
-      await localDataSource.getRefreshToken();
+      await _localDataSource.getRefreshToken();
 
   @override
   Future<void> saveAccessToken(String accessToken) async =>
-      await localDataSource.saveAccessToken(accessToken);
+      await _localDataSource.saveAccessToken(accessToken);
 
   @override
   Future<void> saveRefreshToken(String refreshToken) async =>
-      await localDataSource.saveRefreshToken(refreshToken);
+      await _localDataSource.saveRefreshToken(refreshToken);
 }
