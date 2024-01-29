@@ -1,4 +1,5 @@
 import 'package:hestia/feature/auth/data/data_source/remote_data_source/i_remote_data_source.dart';
+import 'package:hestia/feature/auth/data/model/register_user_request_dto.dart';
 import 'package:hestia/feature/auth/domain/repository/i_remote_repository.dart';
 
 class RemoteRepoistoryAuth implements IRemoteRepositoryAuth {
@@ -16,11 +17,13 @@ class RemoteRepoistoryAuth implements IRemoteRepositoryAuth {
     required bool isSuperUser,
   }) async =>
       await _remoteDataSource.registerNewUser(
-        isSuperUser: isSuperUser,
-        username: username,
-        isVerified: isVerified,
-        password: password,
-        email: email,
+        requestDto: RegisterUserRequestDto(
+          email: email,
+          username: username,
+          isSuperUser: isSuperUser,
+          isVerified: isVerified,
+          password: password,
+        ),
       );
 
   @override

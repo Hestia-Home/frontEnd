@@ -16,19 +16,15 @@ class RemoteDataSourceAuth implements IRemoteDataSourceAuth {
 
   @override
   Future<void> registerNewUser({
-    required String username,
-    required String password,
-    required String email,
-    required bool isVerified,
-    required bool isSuperUser,
+    required RegisterUserRequestDto requestDto,
   }) async =>
       await _service.registerUser(
         request: RegisterUserRequestDto(
-          email: email,
-          username: username,
-          isSuperUser: isSuperUser,
-          isVerified: isVerified,
-          password: password,
+          email: requestDto.email,
+          username: requestDto.username,
+          isSuperUser: requestDto.isSuperUser,
+          isVerified: requestDto.isVerified,
+          password: requestDto.password,
         ),
       );
 
