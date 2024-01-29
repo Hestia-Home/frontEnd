@@ -19,13 +19,7 @@ class RemoteDataSourceAuth implements IRemoteDataSourceAuth {
     required RegisterUserRequestDto requestDto,
   }) async =>
       await _service.registerUser(
-        request: RegisterUserRequestDto(
-          email: requestDto.email,
-          username: requestDto.username,
-          isSuperUser: requestDto.isSuperUser,
-          isVerified: requestDto.isVerified,
-          password: requestDto.password,
-        ),
+        request: requestDto,
       );
 
   @override
