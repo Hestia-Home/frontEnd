@@ -1,9 +1,9 @@
-import 'package:flutter_smarthome/feature/main/data/data_source/remote_data_source/i_remote_data_source.dart';
-import 'package:flutter_smarthome/feature/main/domain/repository/i_remote_repository.dart';
+import 'package:hestia/feature/main/data/data_source/remote_data_source/i_remote_data_source.dart';
+import 'package:hestia/feature/main/domain/repository/i_remote_repository.dart';
 
 class RemoteRepository implements IRemoteRepository {
   final IRemoteDataSource _remoteDataSource;
-  RemoteRepository(this._remoteDataSource);
+  const RemoteRepository(this._remoteDataSource);
 
   @override
   void setTargetTemperatureInWeatherStation(double targetTemperature) {

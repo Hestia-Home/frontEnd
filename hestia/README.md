@@ -13,11 +13,3 @@ In current version only temperature tracking shall be availible.
 In nearest future with sufficient funds the weather station will be added to controll rooms overall temperature. 
 After that we plan to add security system integration and smart devices integration.
 
-#### Application Progress
-
-Authorisation feature is mostly finished, some changes will be added with progression of application development.
-
-
-
-https://user-images.githubusercontent.com/72256017/227246217-7c673e9a-24f0-4d06-8b5d-769efb255b75.mp4
-

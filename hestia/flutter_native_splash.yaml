@@ -1,0 +1,12 @@
+flutter_native_splash:
+  # Customize the parameters below, and run the following command in the terminal:
+  # dart run flutter_native_splash:create
+
+  image: assets/auth/splash.png
+  color: "#272222"
+
+  android_12:
+
+    image: assets/auth/splash.png
+    color: "#272222"
+

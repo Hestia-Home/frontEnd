@@ -20,12 +20,34 @@ class SmartDevices extends Table {
   IntColumn get roomId => integer().references(Rooms, #id)();
 }
 
-@DriftDatabase(tables: [Rooms, SmartDevices])
+class User extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  BoolColumn get isLoggedIn => boolean()();
+  TextColumn get name => text()();
+  BoolColumn get isNew => boolean().nullable()();
+  IntColumn get age => integer().nullable()();
+  TextColumn get sex => text().nullable()();
+}
+
+@DataClassName('HomeData')
+class HomesData extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get homeId => text()();
+  BoolColumn get isConfirmed => boolean().nullable()();
+}
+
+class Settings extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  BoolColumn get biometricsAuthRequired => boolean().nullable()();
+  BoolColumn get pinAuthRequired => boolean().nullable()();
+}
+
+@DriftDatabase(tables: [Rooms, SmartDevices, Settings, User, HomesData])
 class HestiaDB extends _$HestiaDB {
   HestiaDB() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration =>
@@ -41,6 +63,18 @@ class HestiaDB extends _$HestiaDB {
 
   Future<void> createOrUpdateDeviceInfo(Devices device) async {
     await into(smartDevices).insertOnConflictUpdate(device);
+  }
+
+  Future<UserData?> getUserState() async {
+    return (await select(user).getSingleOrNull());
+  }
+
+  Future<List<HomeData>> getHomes() async {
+    return (await select(homesData).get());
+  }
+
+  Future<Setting?> getSettings() async {
+    return (await select(settings).getSingleOrNull());
   }
 
   Stream<List<Room>> watchRooms() {

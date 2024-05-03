@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter_smarthome/feature/main/data/data_source/database/db.dart';
-import 'package:flutter_smarthome/feature/main/domain/entity/temperature_sensor_entity.dart';
+import 'package:hestia/feature/main/data/data_source/database/db.dart';
+import 'package:hestia/feature/main/domain/entity/temperature_sensor_entity.dart';
 
 class TemperatureSensorModel extends TemperatureSensorEntity {
   const TemperatureSensorModel({

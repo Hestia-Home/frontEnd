@@ -1,11 +1,8 @@
-import 'package:dio/dio.dart';
+import 'package:hestia/feature/auth/data/model/register_user_request_dto.dart';
 
 abstract class IRemoteDataSourceAuth {
-  Future<Response> registerNewUser(
-      {required String username,
-      required String password,
-      required String email,
-      required bool isVerified,
-      required bool isSuperUser});
-  Future<Response> authenticate(String username, String password);
+  Future<void> registerNewUser({required RegisterUserRequestDto requestDto});
+  Future<(String, String)> authenticate(String username, String password);
+
+  Future<(String, String)> refresh();
 }

@@ -1,45 +1,27 @@
 // ignore_for_file: depend_on_referenced_packages
+import 'package:auto_route/auto_route.dart';
+import 'package:elementary/elementary.dart';
+import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_smarthome/feature/main/presentation/mobx/main/appbar_store.dart';
-import 'package:flutter_smarthome/feature/main/presentation/mobx/main/main_store.dart';
-import 'package:flutter_smarthome/feature/main/presentation/widgets/page_view_indicator.dart';
-import 'package:flutter_smarthome/feature/main/presentation/widgets/room_view.dart';
+import 'package:hestia/core/common/domain/entity/substates/user_state.dart';
+import 'package:hestia/feature/main/presentation/screens/main_screen_wm.dart';
+import 'package:hestia/feature/main/presentation/widgets/room_view.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobx_widget/mobx_widget.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
-class MainScreen extends StatefulWidget {
-  final MainStore mainStore;
-  final AppBarStore appBarStore;
-  const MainScreen(
-      {super.key, required this.mainStore, required this.appBarStore});
+@RoutePage(name: 'MainRoute')
+class MainWidget extends ElementaryWidget<IMainWidgetModel> {
+  MainWidget({
+    Key? key,
+    WidgetModelFactory wmFactory = createMainWM,
+  }) : super(wmFactory, key: key);
 
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
   final PageController _controller = PageController();
 
   @override
-  void initState() {
-    widget.mainStore;
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final appBarStore = widget.appBarStore;
-    final mainStore = widget.mainStore;
+  Widget build(IMainWidgetModel wm) {
     initializeDateFormatting();
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -52,51 +34,51 @@ class _MainScreenState extends State<MainScreen> {
           shadowColor: Colors.white,
           backgroundColor: Colors.white,
           leadingWidth: double.maxFinite,
-          leading: ObserverStream<DateTime, Exception>(
-              observableStream: () => appBarStore.dateStream,
-              onData: (_, data) => _userComponent(appBarStore: appBarStore)),
-          bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(30),
-              child: Observer(
-                builder: (context) {
-                  if (mainStore.isErrorState) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(mainStore.errorMessage)));
-                    });
-                  } else if (mainStore.isEmptyState) {
-                    return Center(
-                        child: Shimmer(
-                            child: Container(color: Colors.blueGrey.shade200)));
-                  } else {
-                    return SingleChildScrollView(
-                      child: PageViewIndicator(
-                          roomsNames: mainStore.roomsListStream,
-                          controller: _controller),
-                    );
-                  }
-                  return const SizedBox();
-                },
-              )),
+          leading: EntityStateNotifierBuilder<UserState>(
+            listenableEntityState: wm.userState,
+            builder: (context, userState) {
+              if (userState == null) {
+                return Shimmer(
+                  child: Container(
+                    color: Colors.blueGrey.shade200,
+                    height: 65,
+                    width: wm.size.width - 32,
+                  ),
+                );
+              }
+              return EntityStateNotifierBuilder<DateTime>(
+                listenableEntityState: wm.dateTimeState,
+                builder: (_, dateTime) => _userComponent(
+                  dateTime: dateTime!,
+                  userAvatar: wm.getUserAvatar(),
+                  userState: userState,
+                ),
+              );
+            },
+          ),
         ),
         body: SafeArea(
-          child: Center(child: Observer(
-            builder: (context) {
-              if (mainStore.isEmptyState) {
-                return const CircularProgressIndicator();
-              } else if (!mainStore.isErrorState && !mainStore.isEmptyState) {
-                return PageView.builder(
+          child: EntityStateNotifierBuilder(
+              listenableEntityState: wm.roomsState,
+              builder: (context, rooms) {
+                if (rooms == null) {
+                  return Shimmer(
+                    child: Container(
+                      color: Colors.blueGrey.shade200,
+                      height: 65,
+                      width: wm.size.width - 32,
+                    ),
+                  );
+                }
+                return Center(
+                  child: PageView.builder(
                     controller: _controller,
-                    itemCount: mainStore.roomsListStream.value!.length,
-                    itemBuilder: ((context, index) => SingleChildScrollView(
-                            child: RoomView(
-                          dataStream: mainStore.devicesStream,
-                        ))));
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          )),
+                    itemCount: rooms.length,
+                    itemBuilder: ((context, index) =>
+                        RoomView(devicesState: wm.devicesState)),
+                  ),
+                );
+              }),
         ),
         bottomNavigationBar: BottomNavigationBar(
           selectedItemColor: Colors.black,
@@ -127,7 +109,10 @@ class _MainScreenState extends State<MainScreen> {
         ));
   }
 
-  Widget _userComponent({required AppBarStore appBarStore}) {
+  Widget _userComponent(
+      {required DateTime dateTime,
+      required UserState userState,
+      required ImageProvider userAvatar}) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Row(
@@ -136,17 +121,14 @@ class _MainScreenState extends State<MainScreen> {
             onTap: () {},
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: ObserverFuture<ImageProvider, Exception>(
-                observableFuture: () => appBarStore.image,
-                fetchData: () => appBarStore.getUserAvatar(),
-                onData: (context, data) => Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    image: data,
+              child: Container(
+                height: 45,
+                width: 45,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: userAvatar,
                     filterQuality: FilterQuality.high,
-                  )),
+                  ),
                 ),
               ),
             ),
@@ -158,30 +140,23 @@ class _MainScreenState extends State<MainScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Observer(
-                builder: (context) => Text(
-                  appBarStore.user.value!.name,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      letterSpacing: 0.8,
-                      fontFamily: "Lexend",
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
+              Text(
+                userState.name,
+                style: const TextStyle(
+                    color: Colors.black,
+                    letterSpacing: 0.8,
+                    fontFamily: "Lexend",
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ),
-              ObserverStream<DateTime, Exception>(
-                observableStream: () => appBarStore.dateStream,
-                onData: (context, data) => Text(
-                  DateFormat('EEEE, d MMMM', 'ru')
-                      .format(data ?? DateTime.now())
-                      .toTitleCase(),
-                  style: const TextStyle(
-                      letterSpacing: 0.8,
-                      fontFamily: "Lexend",
-                      fontSize: 14,
-                      fontWeight: FontWeight.w100,
-                      color: Color.fromARGB(255, 104, 104, 104)),
-                ),
+              Text(
+                DateFormat('EEEE, d MMMM', 'ru').format(dateTime).toTitleCase(),
+                style: const TextStyle(
+                    letterSpacing: 0.8,
+                    fontFamily: "Lexend",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w100,
+                    color: Color.fromARGB(255, 104, 104, 104)),
               ),
             ],
           ),

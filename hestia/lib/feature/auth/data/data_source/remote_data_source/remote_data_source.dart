@@ -1,46 +1,50 @@
-import 'package:dio/dio.dart';
-import 'package:flutter_smarthome/feature/auth/data/data_source/remote_data_source/i_remote_data_source.dart';
-
-const String login = "http://10.0.2.2:8000/auth/jwt/login";
-const String register = 'http://10.0.2.2:8000/auth/register';
+import 'package:hestia/feature/auth/data/data_source/remote_data_source/i_remote_data_source.dart';
+import 'package:hestia/feature/auth/data/model/auth_request_dto.dart';
+import 'package:hestia/feature/auth/data/model/register_user_request_dto.dart';
+import 'package:hestia/feature/auth/data/services/auth_service.dart';
+import 'package:hestia/feature/auth/domain/repository/i_local_repository.dart';
 
 class RemoteDataSourceAuth implements IRemoteDataSourceAuth {
-  final Dio dio;
+  final AuthService _service;
+  final ILocalRepositoryAuth _localRepository;
 
-  RemoteDataSourceAuth(this.dio);
+  const RemoteDataSourceAuth(
+      {required AuthService service,
+      required ILocalRepositoryAuth localRepository})
+      : _localRepository = localRepository,
+        _service = service;
 
   @override
-  Future<Response> registerNewUser(
-      {required String username,
-      required String password,
-      required String email,
-      required bool isVerified,
-      required bool isSuperUser}) async {
-    dynamic response;
-    try {
-      response = await dio.post(register, data: {
-        "username": username,
-        "password": password,
-        "email": email,
-        "is_verified": isVerified,
-        "is_superuser": isSuperUser,
-        "is_active": true
-      });
-    } catch (e) {
-      response = e.toString();
-    }
-    return response;
+  Future<void> registerNewUser({
+    required RegisterUserRequestDto requestDto,
+  }) async =>
+      await _service.registerUser(
+        request: requestDto,
+      );
+
+  @override
+  Future<(String, String)> authenticate(
+      String username, String password) async {
+    final response = await _service.login(
+      request: AuthRequestDto(
+        password: password,
+        username: username,
+      ),
+    );
+
+    await _localRepository.saveAccessToken(response.accessToken);
+    await _localRepository.saveRefreshToken(response.refreshToken);
+
+    return (response.accessToken, response.refreshToken);
   }
 
   @override
-  Future<Response> authenticate(String username, String password) async {
-    dynamic response;
-    try {
-      response = await dio
-          .post(register, data: {"username": username, "password": password});
-    } catch (e) {
-      response = e.toString();
-    }
-    return response;
+  Future<(String, String)> refresh() async {
+    final response = await _service.refresh();
+
+    await _localRepository.saveAccessToken(response.accessToken);
+    await _localRepository.saveRefreshToken(response.refreshToken);
+
+    return (response.accessToken, response.refreshToken);
   }
 }

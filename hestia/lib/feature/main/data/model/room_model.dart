@@ -1,4 +1,4 @@
-import 'package:flutter_smarthome/feature/main/data/data_source/database/db.dart';
+import 'package:hestia/feature/main/data/data_source/database/db.dart';
 
 class RoomToDbModel extends Room {
   RoomToDbModel({required super.roomName, required super.id});

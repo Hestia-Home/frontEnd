@@ -1,28 +1,24 @@
 import 'dart:async';
-import 'dart:convert';
+
 import 'dart:io';
 import 'dart:io' as io;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_smarthome/core/common/domain/entity/user_entity.dart';
-import 'package:flutter_smarthome/feature/main/data/data_source/database/db.dart';
-import 'package:flutter_smarthome/feature/main/data/data_source/local_data_source/i_local_data_source.dart';
-import 'package:flutter_smarthome/core/common/data/model/user_model.dart';
-import 'package:flutter_smarthome/feature/main/data/model/device_model.dart';
-import 'package:flutter_smarthome/feature/main/data/model/lighting_device_model.dart';
-import 'package:flutter_smarthome/feature/main/data/model/room_model.dart';
-import 'package:flutter_smarthome/feature/main/data/model/sensor_model.dart';
-import 'package:flutter_smarthome/feature/main/domain/entity/device.dart';
-import 'package:flutter_smarthome/feature/main/domain/entity/room_entity.dart';
+import 'package:hestia/feature/main/data/data_source/database/db.dart';
+import 'package:hestia/feature/main/data/data_source/local_data_source/i_local_data_source.dart';
+import 'package:hestia/feature/main/data/model/device_model.dart';
+import 'package:hestia/feature/main/data/model/lighting_device_model.dart';
+import 'package:hestia/feature/main/data/model/room_model.dart';
+import 'package:hestia/feature/main/data/model/sensor_model.dart';
+import 'package:hestia/feature/main/domain/entity/device.dart';
+import 'package:hestia/feature/main/domain/entity/room_entity.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:developer' as dev;
 
 class LocalDataSource implements ILocalDataSource {
-  final FlutterSecureStorage _secureStorage;
   final HestiaDB _hestiaDB;
 
-  const LocalDataSource(this._secureStorage, this._hestiaDB);
+  const LocalDataSource(this._hestiaDB);
 
   @override
   Stream<List<Device>> devicesFromDBStream() {
@@ -54,26 +50,18 @@ class LocalDataSource implements ILocalDataSource {
   }
 
   @override
+  Future<UserData?> getUser() async => await _hestiaDB.getUserState();
+
+  @override
+  Future<List<HomeData>> getHomes() async => await _hestiaDB.getHomes();
+
+  @override
+  Future<Setting?> getSettings() async => await _hestiaDB.getSettings();
+
+  @override
   Future<void> createOrUpdateDeviceInfo(Map<String, dynamic> json) async {
     final Devices device = DeviceToDbModel.fromJson(json);
     await _hestiaDB.createOrUpdateDeviceInfo(device);
-  }
-
-  @override
-  Future<UserEntity?> getUser() async {
-    final userData = await _secureStorage.read(key: 'user') ?? '';
-    final UserEntity user = UserModel.fromJson(jsonDecode(userData));
-    return user;
-  }
-
-  @override
-  Future<void> setUser(
-      {required String userName,
-      required String userId,
-      required bool isLoggedIn}) async {
-    final String userModel =
-        UserModel(name: userName, isLoggedIn: isLoggedIn).toJson().toString();
-    await _secureStorage.write(key: 'user', value: userModel);
   }
 
   @override

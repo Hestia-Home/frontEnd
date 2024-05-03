@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_smarthome/feature/main/domain/entity/device.dart';
+import 'package:hestia/feature/main/domain/entity/device.dart';
 
 class LightingDeviceEntity extends Device with EquatableMixin {
   final bool isOn;

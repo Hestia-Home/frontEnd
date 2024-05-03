@@ -422,13 +422,792 @@ class SmartDevicesCompanion extends UpdateCompanion<Devices> {
   }
 }
 
+class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _biometricsAuthRequiredMeta =
+      const VerificationMeta('biometricsAuthRequired');
+  @override
+  late final GeneratedColumn<bool> biometricsAuthRequired =
+      GeneratedColumn<bool>('biometrics_auth_required', aliasedName, true,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'CHECK ("biometrics_auth_required" IN (0, 1))'));
+  static const VerificationMeta _pinAuthRequiredMeta =
+      const VerificationMeta('pinAuthRequired');
+  @override
+  late final GeneratedColumn<bool> pinAuthRequired = GeneratedColumn<bool>(
+      'pin_auth_required', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("pin_auth_required" IN (0, 1))'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, biometricsAuthRequired, pinAuthRequired];
+  @override
+  String get aliasedName => _alias ?? 'settings';
+  @override
+  String get actualTableName => 'settings';
+  @override
+  VerificationContext validateIntegrity(Insertable<Setting> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('biometrics_auth_required')) {
+      context.handle(
+          _biometricsAuthRequiredMeta,
+          biometricsAuthRequired.isAcceptableOrUnknown(
+              data['biometrics_auth_required']!, _biometricsAuthRequiredMeta));
+    }
+    if (data.containsKey('pin_auth_required')) {
+      context.handle(
+          _pinAuthRequiredMeta,
+          pinAuthRequired.isAcceptableOrUnknown(
+              data['pin_auth_required']!, _pinAuthRequiredMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Setting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Setting(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      biometricsAuthRequired: attachedDatabase.typeMapping.read(
+          DriftSqlType.bool,
+          data['${effectivePrefix}biometrics_auth_required']),
+      pinAuthRequired: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}pin_auth_required']),
+    );
+  }
+
+  @override
+  $SettingsTable createAlias(String alias) {
+    return $SettingsTable(attachedDatabase, alias);
+  }
+}
+
+class Setting extends DataClass implements Insertable<Setting> {
+  final int id;
+  final bool? biometricsAuthRequired;
+  final bool? pinAuthRequired;
+  const Setting(
+      {required this.id, this.biometricsAuthRequired, this.pinAuthRequired});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || biometricsAuthRequired != null) {
+      map['biometrics_auth_required'] = Variable<bool>(biometricsAuthRequired);
+    }
+    if (!nullToAbsent || pinAuthRequired != null) {
+      map['pin_auth_required'] = Variable<bool>(pinAuthRequired);
+    }
+    return map;
+  }
+
+  SettingsCompanion toCompanion(bool nullToAbsent) {
+    return SettingsCompanion(
+      id: Value(id),
+      biometricsAuthRequired: biometricsAuthRequired == null && nullToAbsent
+          ? const Value.absent()
+          : Value(biometricsAuthRequired),
+      pinAuthRequired: pinAuthRequired == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pinAuthRequired),
+    );
+  }
+
+  factory Setting.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Setting(
+      id: serializer.fromJson<int>(json['id']),
+      biometricsAuthRequired:
+          serializer.fromJson<bool?>(json['biometricsAuthRequired']),
+      pinAuthRequired: serializer.fromJson<bool?>(json['pinAuthRequired']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'biometricsAuthRequired':
+          serializer.toJson<bool?>(biometricsAuthRequired),
+      'pinAuthRequired': serializer.toJson<bool?>(pinAuthRequired),
+    };
+  }
+
+  Setting copyWith(
+          {int? id,
+          Value<bool?> biometricsAuthRequired = const Value.absent(),
+          Value<bool?> pinAuthRequired = const Value.absent()}) =>
+      Setting(
+        id: id ?? this.id,
+        biometricsAuthRequired: biometricsAuthRequired.present
+            ? biometricsAuthRequired.value
+            : this.biometricsAuthRequired,
+        pinAuthRequired: pinAuthRequired.present
+            ? pinAuthRequired.value
+            : this.pinAuthRequired,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Setting(')
+          ..write('id: $id, ')
+          ..write('biometricsAuthRequired: $biometricsAuthRequired, ')
+          ..write('pinAuthRequired: $pinAuthRequired')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, biometricsAuthRequired, pinAuthRequired);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Setting &&
+          other.id == this.id &&
+          other.biometricsAuthRequired == this.biometricsAuthRequired &&
+          other.pinAuthRequired == this.pinAuthRequired);
+}
+
+class SettingsCompanion extends UpdateCompanion<Setting> {
+  final Value<int> id;
+  final Value<bool?> biometricsAuthRequired;
+  final Value<bool?> pinAuthRequired;
+  const SettingsCompanion({
+    this.id = const Value.absent(),
+    this.biometricsAuthRequired = const Value.absent(),
+    this.pinAuthRequired = const Value.absent(),
+  });
+  SettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.biometricsAuthRequired = const Value.absent(),
+    this.pinAuthRequired = const Value.absent(),
+  });
+  static Insertable<Setting> custom({
+    Expression<int>? id,
+    Expression<bool>? biometricsAuthRequired,
+    Expression<bool>? pinAuthRequired,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (biometricsAuthRequired != null)
+        'biometrics_auth_required': biometricsAuthRequired,
+      if (pinAuthRequired != null) 'pin_auth_required': pinAuthRequired,
+    });
+  }
+
+  SettingsCompanion copyWith(
+      {Value<int>? id,
+      Value<bool?>? biometricsAuthRequired,
+      Value<bool?>? pinAuthRequired}) {
+    return SettingsCompanion(
+      id: id ?? this.id,
+      biometricsAuthRequired:
+          biometricsAuthRequired ?? this.biometricsAuthRequired,
+      pinAuthRequired: pinAuthRequired ?? this.pinAuthRequired,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (biometricsAuthRequired.present) {
+      map['biometrics_auth_required'] =
+          Variable<bool>(biometricsAuthRequired.value);
+    }
+    if (pinAuthRequired.present) {
+      map['pin_auth_required'] = Variable<bool>(pinAuthRequired.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('biometricsAuthRequired: $biometricsAuthRequired, ')
+          ..write('pinAuthRequired: $pinAuthRequired')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UserTable extends User with TableInfo<$UserTable, UserData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _isLoggedInMeta =
+      const VerificationMeta('isLoggedIn');
+  @override
+  late final GeneratedColumn<bool> isLoggedIn = GeneratedColumn<bool>(
+      'is_logged_in', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_logged_in" IN (0, 1))'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isNewMeta = const VerificationMeta('isNew');
+  @override
+  late final GeneratedColumn<bool> isNew = GeneratedColumn<bool>(
+      'is_new', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_new" IN (0, 1))'));
+  static const VerificationMeta _ageMeta = const VerificationMeta('age');
+  @override
+  late final GeneratedColumn<int> age = GeneratedColumn<int>(
+      'age', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _sexMeta = const VerificationMeta('sex');
+  @override
+  late final GeneratedColumn<String> sex = GeneratedColumn<String>(
+      'sex', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [id, isLoggedIn, name, isNew, age, sex];
+  @override
+  String get aliasedName => _alias ?? 'user';
+  @override
+  String get actualTableName => 'user';
+  @override
+  VerificationContext validateIntegrity(Insertable<UserData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('is_logged_in')) {
+      context.handle(
+          _isLoggedInMeta,
+          isLoggedIn.isAcceptableOrUnknown(
+              data['is_logged_in']!, _isLoggedInMeta));
+    } else if (isInserting) {
+      context.missing(_isLoggedInMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('is_new')) {
+      context.handle(
+          _isNewMeta, isNew.isAcceptableOrUnknown(data['is_new']!, _isNewMeta));
+    }
+    if (data.containsKey('age')) {
+      context.handle(
+          _ageMeta, age.isAcceptableOrUnknown(data['age']!, _ageMeta));
+    }
+    if (data.containsKey('sex')) {
+      context.handle(
+          _sexMeta, sex.isAcceptableOrUnknown(data['sex']!, _sexMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      isLoggedIn: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_logged_in'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      isNew: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_new']),
+      age: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}age']),
+      sex: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}sex']),
+    );
+  }
+
+  @override
+  $UserTable createAlias(String alias) {
+    return $UserTable(attachedDatabase, alias);
+  }
+}
+
+class UserData extends DataClass implements Insertable<UserData> {
+  final int id;
+  final bool isLoggedIn;
+  final String name;
+  final bool? isNew;
+  final int? age;
+  final String? sex;
+  const UserData(
+      {required this.id,
+      required this.isLoggedIn,
+      required this.name,
+      this.isNew,
+      this.age,
+      this.sex});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['is_logged_in'] = Variable<bool>(isLoggedIn);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || isNew != null) {
+      map['is_new'] = Variable<bool>(isNew);
+    }
+    if (!nullToAbsent || age != null) {
+      map['age'] = Variable<int>(age);
+    }
+    if (!nullToAbsent || sex != null) {
+      map['sex'] = Variable<String>(sex);
+    }
+    return map;
+  }
+
+  UserCompanion toCompanion(bool nullToAbsent) {
+    return UserCompanion(
+      id: Value(id),
+      isLoggedIn: Value(isLoggedIn),
+      name: Value(name),
+      isNew:
+          isNew == null && nullToAbsent ? const Value.absent() : Value(isNew),
+      age: age == null && nullToAbsent ? const Value.absent() : Value(age),
+      sex: sex == null && nullToAbsent ? const Value.absent() : Value(sex),
+    );
+  }
+
+  factory UserData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserData(
+      id: serializer.fromJson<int>(json['id']),
+      isLoggedIn: serializer.fromJson<bool>(json['isLoggedIn']),
+      name: serializer.fromJson<String>(json['name']),
+      isNew: serializer.fromJson<bool?>(json['isNew']),
+      age: serializer.fromJson<int?>(json['age']),
+      sex: serializer.fromJson<String?>(json['sex']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'isLoggedIn': serializer.toJson<bool>(isLoggedIn),
+      'name': serializer.toJson<String>(name),
+      'isNew': serializer.toJson<bool?>(isNew),
+      'age': serializer.toJson<int?>(age),
+      'sex': serializer.toJson<String?>(sex),
+    };
+  }
+
+  UserData copyWith(
+          {int? id,
+          bool? isLoggedIn,
+          String? name,
+          Value<bool?> isNew = const Value.absent(),
+          Value<int?> age = const Value.absent(),
+          Value<String?> sex = const Value.absent()}) =>
+      UserData(
+        id: id ?? this.id,
+        isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+        name: name ?? this.name,
+        isNew: isNew.present ? isNew.value : this.isNew,
+        age: age.present ? age.value : this.age,
+        sex: sex.present ? sex.value : this.sex,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('UserData(')
+          ..write('id: $id, ')
+          ..write('isLoggedIn: $isLoggedIn, ')
+          ..write('name: $name, ')
+          ..write('isNew: $isNew, ')
+          ..write('age: $age, ')
+          ..write('sex: $sex')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, isLoggedIn, name, isNew, age, sex);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserData &&
+          other.id == this.id &&
+          other.isLoggedIn == this.isLoggedIn &&
+          other.name == this.name &&
+          other.isNew == this.isNew &&
+          other.age == this.age &&
+          other.sex == this.sex);
+}
+
+class UserCompanion extends UpdateCompanion<UserData> {
+  final Value<int> id;
+  final Value<bool> isLoggedIn;
+  final Value<String> name;
+  final Value<bool?> isNew;
+  final Value<int?> age;
+  final Value<String?> sex;
+  const UserCompanion({
+    this.id = const Value.absent(),
+    this.isLoggedIn = const Value.absent(),
+    this.name = const Value.absent(),
+    this.isNew = const Value.absent(),
+    this.age = const Value.absent(),
+    this.sex = const Value.absent(),
+  });
+  UserCompanion.insert({
+    this.id = const Value.absent(),
+    required bool isLoggedIn,
+    required String name,
+    this.isNew = const Value.absent(),
+    this.age = const Value.absent(),
+    this.sex = const Value.absent(),
+  })  : isLoggedIn = Value(isLoggedIn),
+        name = Value(name);
+  static Insertable<UserData> custom({
+    Expression<int>? id,
+    Expression<bool>? isLoggedIn,
+    Expression<String>? name,
+    Expression<bool>? isNew,
+    Expression<int>? age,
+    Expression<String>? sex,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (isLoggedIn != null) 'is_logged_in': isLoggedIn,
+      if (name != null) 'name': name,
+      if (isNew != null) 'is_new': isNew,
+      if (age != null) 'age': age,
+      if (sex != null) 'sex': sex,
+    });
+  }
+
+  UserCompanion copyWith(
+      {Value<int>? id,
+      Value<bool>? isLoggedIn,
+      Value<String>? name,
+      Value<bool?>? isNew,
+      Value<int?>? age,
+      Value<String?>? sex}) {
+    return UserCompanion(
+      id: id ?? this.id,
+      isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      name: name ?? this.name,
+      isNew: isNew ?? this.isNew,
+      age: age ?? this.age,
+      sex: sex ?? this.sex,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (isLoggedIn.present) {
+      map['is_logged_in'] = Variable<bool>(isLoggedIn.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (isNew.present) {
+      map['is_new'] = Variable<bool>(isNew.value);
+    }
+    if (age.present) {
+      map['age'] = Variable<int>(age.value);
+    }
+    if (sex.present) {
+      map['sex'] = Variable<String>(sex.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserCompanion(')
+          ..write('id: $id, ')
+          ..write('isLoggedIn: $isLoggedIn, ')
+          ..write('name: $name, ')
+          ..write('isNew: $isNew, ')
+          ..write('age: $age, ')
+          ..write('sex: $sex')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $HomesDataTable extends HomesData
+    with TableInfo<$HomesDataTable, HomeData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HomesDataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _homeIdMeta = const VerificationMeta('homeId');
+  @override
+  late final GeneratedColumn<String> homeId = GeneratedColumn<String>(
+      'home_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isConfirmedMeta =
+      const VerificationMeta('isConfirmed');
+  @override
+  late final GeneratedColumn<bool> isConfirmed = GeneratedColumn<bool>(
+      'is_confirmed', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_confirmed" IN (0, 1))'));
+  @override
+  List<GeneratedColumn> get $columns => [id, homeId, isConfirmed];
+  @override
+  String get aliasedName => _alias ?? 'homes_data';
+  @override
+  String get actualTableName => 'homes_data';
+  @override
+  VerificationContext validateIntegrity(Insertable<HomeData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('home_id')) {
+      context.handle(_homeIdMeta,
+          homeId.isAcceptableOrUnknown(data['home_id']!, _homeIdMeta));
+    } else if (isInserting) {
+      context.missing(_homeIdMeta);
+    }
+    if (data.containsKey('is_confirmed')) {
+      context.handle(
+          _isConfirmedMeta,
+          isConfirmed.isAcceptableOrUnknown(
+              data['is_confirmed']!, _isConfirmedMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HomeData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HomeData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      homeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}home_id'])!,
+      isConfirmed: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_confirmed']),
+    );
+  }
+
+  @override
+  $HomesDataTable createAlias(String alias) {
+    return $HomesDataTable(attachedDatabase, alias);
+  }
+}
+
+class HomeData extends DataClass implements Insertable<HomeData> {
+  final int id;
+  final String homeId;
+  final bool? isConfirmed;
+  const HomeData({required this.id, required this.homeId, this.isConfirmed});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['home_id'] = Variable<String>(homeId);
+    if (!nullToAbsent || isConfirmed != null) {
+      map['is_confirmed'] = Variable<bool>(isConfirmed);
+    }
+    return map;
+  }
+
+  HomesDataCompanion toCompanion(bool nullToAbsent) {
+    return HomesDataCompanion(
+      id: Value(id),
+      homeId: Value(homeId),
+      isConfirmed: isConfirmed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isConfirmed),
+    );
+  }
+
+  factory HomeData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HomeData(
+      id: serializer.fromJson<int>(json['id']),
+      homeId: serializer.fromJson<String>(json['homeId']),
+      isConfirmed: serializer.fromJson<bool?>(json['isConfirmed']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'homeId': serializer.toJson<String>(homeId),
+      'isConfirmed': serializer.toJson<bool?>(isConfirmed),
+    };
+  }
+
+  HomeData copyWith(
+          {int? id,
+          String? homeId,
+          Value<bool?> isConfirmed = const Value.absent()}) =>
+      HomeData(
+        id: id ?? this.id,
+        homeId: homeId ?? this.homeId,
+        isConfirmed: isConfirmed.present ? isConfirmed.value : this.isConfirmed,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('HomeData(')
+          ..write('id: $id, ')
+          ..write('homeId: $homeId, ')
+          ..write('isConfirmed: $isConfirmed')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, homeId, isConfirmed);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HomeData &&
+          other.id == this.id &&
+          other.homeId == this.homeId &&
+          other.isConfirmed == this.isConfirmed);
+}
+
+class HomesDataCompanion extends UpdateCompanion<HomeData> {
+  final Value<int> id;
+  final Value<String> homeId;
+  final Value<bool?> isConfirmed;
+  const HomesDataCompanion({
+    this.id = const Value.absent(),
+    this.homeId = const Value.absent(),
+    this.isConfirmed = const Value.absent(),
+  });
+  HomesDataCompanion.insert({
+    this.id = const Value.absent(),
+    required String homeId,
+    this.isConfirmed = const Value.absent(),
+  }) : homeId = Value(homeId);
+  static Insertable<HomeData> custom({
+    Expression<int>? id,
+    Expression<String>? homeId,
+    Expression<bool>? isConfirmed,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (homeId != null) 'home_id': homeId,
+      if (isConfirmed != null) 'is_confirmed': isConfirmed,
+    });
+  }
+
+  HomesDataCompanion copyWith(
+      {Value<int>? id, Value<String>? homeId, Value<bool?>? isConfirmed}) {
+    return HomesDataCompanion(
+      id: id ?? this.id,
+      homeId: homeId ?? this.homeId,
+      isConfirmed: isConfirmed ?? this.isConfirmed,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (homeId.present) {
+      map['home_id'] = Variable<String>(homeId.value);
+    }
+    if (isConfirmed.present) {
+      map['is_confirmed'] = Variable<bool>(isConfirmed.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HomesDataCompanion(')
+          ..write('id: $id, ')
+          ..write('homeId: $homeId, ')
+          ..write('isConfirmed: $isConfirmed')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$HestiaDB extends GeneratedDatabase {
   _$HestiaDB(QueryExecutor e) : super(e);
   late final $RoomsTable rooms = $RoomsTable(this);
   late final $SmartDevicesTable smartDevices = $SmartDevicesTable(this);
+  late final $SettingsTable settings = $SettingsTable(this);
+  late final $UserTable user = $UserTable(this);
+  late final $HomesDataTable homesData = $HomesDataTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [rooms, smartDevices];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [rooms, smartDevices, settings, user, homesData];
 }
