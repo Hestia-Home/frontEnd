@@ -3,7 +3,7 @@ import 'package:flutter_smarthome/feature/main/data/model/lighting_device_model.
 import 'package:flutter_smarthome/feature/main/data/model/sensor_model.dart';
 import 'package:flutter_smarthome/feature/main/domain/entity/device.dart';
 import 'package:mobx/mobx.dart';
-import 'package:mobx_widget/mobx_widget.dart';
+// import 'package:mobx_widget/mobx_widget.dart';
 
 class RoomView extends StatelessWidget {
   final ObservableStream<List<Device>> dataStream;
@@ -15,19 +15,21 @@ class RoomView extends StatelessWidget {
       height: MediaQuery.of(context).size.height - 200,
       child: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10, top: 15),
-        child: ObserverStream<List<Device>, Exception>(
-          observableStream: () => dataStream,
-          onData: (_, data) => GridView.builder(
-              itemCount: data?.length,
-              cacheExtent: 200,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                  childAspectRatio: 185 / 250),
-              itemBuilder: (context, gridIndex) {
-                return _getCardWidget(data?[gridIndex]);
-              }),
+        child: StreamBuilder<List<Device>>(
+          stream: dataStream,
+          builder: (_, data) {
+            if (!data.hasData) {
+              return CircularProgressIndicator();
+            }
+            return GridView.builder(
+                itemCount: data.data?.length,
+                cacheExtent: 200,
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 200, crossAxisSpacing: 5, mainAxisSpacing: 5, childAspectRatio: 185 / 250),
+                itemBuilder: (context, gridIndex) {
+                  return _getCardWidget(data?.data?[gridIndex]);
+                });
+          },
         ),
       ),
     );
@@ -62,26 +64,19 @@ class RoomView extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 65),
             child: Text(
               "Освещение",
-              style: TextStyle(
-                  fontFamily: "Lexend",
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(fontFamily: "Lexend", fontSize: 17, fontWeight: FontWeight.bold),
             ),
           ),
           Row(
             children: [
               const Text(
                 "On",
-                style: TextStyle(
-                    fontFamily: "Lexend",
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold),
+                style: TextStyle(fontFamily: "Lexend", fontSize: 17, fontWeight: FontWeight.bold),
               ),
               Expanded(
                 child: Align(
                   alignment: Alignment.topCenter,
-                  child: Switch.adaptive(
-                      value: false, onChanged: (bool newValue) {}),
+                  child: Switch.adaptive(value: false, onChanged: (bool newValue) {}),
                 ),
               )
             ],
@@ -111,10 +106,7 @@ class RoomView extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 30),
                 child: Text(
                   "Температура",
-                  style: TextStyle(
-                      fontFamily: "Lexend",
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold),
+                  style: TextStyle(fontFamily: "Lexend", fontSize: 17, fontWeight: FontWeight.bold),
                 )),
             Padding(
                 padding: const EdgeInsets.only(bottom: 35),
@@ -125,17 +117,13 @@ class RoomView extends StatelessWidget {
                   padding: EdgeInsets.only(left: 25),
                   child: Text(
                     "On",
-                    style: TextStyle(
-                        fontFamily: "Lexend",
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(fontFamily: "Lexend", fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Expanded(
                     child: Align(
                         alignment: Alignment.topRight,
-                        child: Switch.adaptive(
-                            value: false, onChanged: (bool newValue) {})))
+                        child: Switch.adaptive(value: false, onChanged: (bool newValue) {})))
               ],
             )
           ],

@@ -11,8 +11,7 @@ class MainStore = _MainStore with _$MainStore;
 abstract class _MainStore with Store {
   late final ILocalRepository _localRepository;
 
-  _MainStore(ILocalRepository localRepository)
-      : _localRepository = localRepository {
+  _MainStore(ILocalRepository localRepository) : _localRepository = localRepository {
     try {
       devicesStream.listen((value) {
         value.isNotEmpty ? _setDataRecievedState() : _setEmptyState();
@@ -30,20 +29,18 @@ abstract class _MainStore with Store {
     }
   }
 
-  late final Stream<List<RoomEntity>> _roomsStreamFromRepository =
-      _localRepository.watchRoomList();
+  late final Stream<List<RoomEntity>> _roomsStreamFromRepository = _localRepository.watchRoomList();
 
-  late final Stream<List<Device>> _devicesStreamFromRepository =
-      _localRepository.devicesFromDBStream();
+  late final Stream<List<Device>> _devicesStreamFromRepository = _localRepository.devicesFromDBStream();
 
   @observable
-  late ObservableStream<List<RoomEntity>> roomsListStream = ObservableStream(
-      _roomsStreamFromRepository,
-      initialValue: [const RoomEntity(id: 0, name: "Все устройства")]);
+  late ObservableStream<List<RoomEntity>> roomsListStream =
+      ObservableStream(_roomsStreamFromRepository, initialValue: [const RoomEntity(id: 0, name: "Все устройства")])
+          .asBroadcastStream();
 
   @observable
   late ObservableStream<List<Device>> devicesStream =
-      ObservableStream(_devicesStreamFromRepository);
+      ObservableStream(_devicesStreamFromRepository).asBroadcastStream();
 
   @observable
   String errorMessage = "";

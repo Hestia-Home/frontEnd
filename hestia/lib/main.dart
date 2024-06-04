@@ -5,14 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_smarthome/core/di/service_locator.dart';
 import 'package:flutter_smarthome/core/navigation/app_router/app_router.gr.dart';
 import 'package:flutter_smarthome/feature/main/presentation/screens/main_screen.dart';
-import 'package:get_storage/get_storage.dart';
 
 void main() async {
-  await GetStorage.init();
-
   FlutterError.onError = (FlutterErrorDetails details) async {
-    Zone.current.handleUncaughtError(
-        details.exception, StackTrace.fromString(details.stack.toString()));
+    Zone.current.handleUncaughtError(details.exception, StackTrace.fromString(details.stack.toString()));
   };
 
   runZonedGuarded<void>(

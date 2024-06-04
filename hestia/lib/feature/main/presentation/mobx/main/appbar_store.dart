@@ -30,13 +30,11 @@ abstract class _AppBarStore with Store {
   ObservableFuture<UserEntity> user = ObservableFuture.value(const _MockUser());
 
   @observable
-  ObservableFuture<ImageProvider> image =
-      ObservableFuture.value(const AssetImage('assets/main/user_image.jpg'));
+  ObservableFuture<ImageProvider> image = ObservableFuture.value(const AssetImage('assets/main/user_image.jpg'));
 
   final StreamController<DateTime> _dateStreamController = StreamController();
 
-  late ObservableStream<DateTime> dateStream =
-      ObservableStream(_dateStreamController.stream);
+  late ObservableStream<DateTime> dateStream = ObservableStream(_dateStreamController.stream).asBroadcastStream();
 
   @action
   getUserAvatar() async {
@@ -69,8 +67,7 @@ abstract class _AppBarStore with Store {
   }
 
   Future<ImageProvider> _getImage() async {
-    final loadedImage = (await _localRepository.getUserAvatarImage()) ??
-        const AssetImage('assets/main/user_image.jpg');
+    final loadedImage = (await _localRepository.getUserAvatarImage()) ?? const AssetImage('assets/main/user_image.jpg');
     return loadedImage;
   }
 

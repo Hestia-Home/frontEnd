@@ -8,14 +8,13 @@ import 'package:flutter_smarthome/feature/main/presentation/widgets/page_view_in
 import 'package:flutter_smarthome/feature/main/presentation/widgets/room_view.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobx_widget/mobx_widget.dart';
+// import 'package:mobx_widget/mobx_widget.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class MainScreen extends StatefulWidget {
   final MainStore mainStore;
   final AppBarStore appBarStore;
-  const MainScreen(
-      {super.key, required this.mainStore, required this.appBarStore});
+  const MainScreen({super.key, required this.mainStore, required this.appBarStore});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -52,27 +51,23 @@ class _MainScreenState extends State<MainScreen> {
           shadowColor: Colors.white,
           backgroundColor: Colors.white,
           leadingWidth: double.maxFinite,
-          leading: ObserverStream<DateTime, Exception>(
-              observableStream: () => appBarStore.dateStream,
-              onData: (_, data) => _userComponent(appBarStore: appBarStore)),
+          leading: StreamBuilder<DateTime>(
+            stream: appBarStore.dateStream,
+            builder: (_, data) => _userComponent(appBarStore: appBarStore),
+          ),
           bottom: PreferredSize(
               preferredSize: const Size.fromHeight(30),
               child: Observer(
                 builder: (context) {
                   if (mainStore.isErrorState) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(mainStore.errorMessage)));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mainStore.errorMessage)));
                     });
                   } else if (mainStore.isEmptyState) {
-                    return Center(
-                        child: Shimmer(
-                            child: Container(color: Colors.blueGrey.shade200)));
+                    return Center(child: Shimmer(child: Container(color: Colors.blueGrey.shade200)));
                   } else {
                     return SingleChildScrollView(
-                      child: PageViewIndicator(
-                          roomsNames: mainStore.roomsListStream,
-                          controller: _controller),
+                      child: PageViewIndicator(roomsNames: mainStore.roomsListStream, controller: _controller),
                     );
                   }
                   return const SizedBox();
@@ -128,6 +123,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _userComponent({required AppBarStore appBarStore}) {
+    appBarStore.getUserAvatar();
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Row(
@@ -136,18 +132,23 @@ class _MainScreenState extends State<MainScreen> {
             onTap: () {},
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: ObserverFuture<ImageProvider, Exception>(
-                observableFuture: () => appBarStore.image,
-                fetchData: () => appBarStore.getUserAvatar(),
-                onData: (context, data) => Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    image: data,
-                    filterQuality: FilterQuality.high,
-                  )),
-                ),
+              child: FutureBuilder<ImageProvider>(
+                future: appBarStore.image,
+                // fetchData: () => appBarStore.getUserAvatar(),
+                builder: (context, data) {
+                  if (!data.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  return Container(
+                    height: 45,
+                    width: 45,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      image: data.data!,
+                      filterQuality: FilterQuality.high,
+                    )),
+                  );
+                },
               ),
             ),
           ),
@@ -169,12 +170,10 @@ class _MainScreenState extends State<MainScreen> {
                       fontWeight: FontWeight.bold),
                 ),
               ),
-              ObserverStream<DateTime, Exception>(
-                observableStream: () => appBarStore.dateStream,
-                onData: (context, data) => Text(
-                  DateFormat('EEEE, d MMMM', 'ru')
-                      .format(data ?? DateTime.now())
-                      .toTitleCase(),
+              StreamBuilder<DateTime>(
+                stream: appBarStore.dateStream,
+                builder: (context, data) => Text(
+                  DateFormat('EEEE, d MMMM', 'ru').format(data.data ?? DateTime.now()).toTitleCase(),
                   style: const TextStyle(
                       letterSpacing: 0.8,
                       fontFamily: "Lexend",
@@ -204,10 +203,6 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 extension StringCasingExtension on String {
-  String toCapitalized() =>
-      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
-      .split(' ')
-      .map((str) => str.toCapitalized())
-      .join(' ');
+  String toCapitalized() => length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
 }
